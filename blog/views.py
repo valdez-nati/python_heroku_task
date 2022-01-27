@@ -14,9 +14,8 @@ def index(request):
 
 def create(request):
     if (request.method == 'POST'):
-        title = request.POST['title']
-        content = request.POST['content']
-        article = Article(title=title, content=content)
+        obj = Article()
+        article = ArticleForm(request.POST, instance=obj)
         article.save()
         return redirect('index')
     else:
@@ -37,18 +36,13 @@ def detail(request, article_id):
 def edit(request, article_id):
     article = Article.objects.get(id=article_id)
     if (request.method == 'POST'):
-        article.title = request.POST['title']
-        article.content = request.POST['content']
+        article = ArticleForm(request.POST, instance=article)
         article.save()
         return redirect('detail', article_id)
     else:
-        form = ArticleForm(initial={
-            'title': article.title,
-            'content': article.content,
-            })
         params = {
             'article': article,
-            'form': form,
+            'form': ArticleForm(instance=article),
         }
         return render(request, 'blog/edit.html', params)
 
